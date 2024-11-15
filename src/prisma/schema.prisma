@@ -11,11 +11,16 @@ generator client {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  name     String
-  tokens   Token[]
+  id              Int              @id @default(autoincrement())
+  email           String           @unique
+  password        String
+  name            String
+  tokens          Token[]
+  trades          Trades[]
+  scheduledTrades ScheduledTrade[]
+
+  @@index([email], map: "email_idx")
+  @@map("users")
 }
 
 model Token {
@@ -41,4 +46,64 @@ enum TokenType {
   resetpassword
   verifyemail
   verifyphone
+}
+
+model Trades {
+  id               Int         @id @default(autoincrement())
+  userId           Int
+  symbol           String
+  quantity         Float
+  price            Float
+  type             TradeType
+  entryPrice       Float
+  status           TradeStatus @default(open)
+  exitPrice        Float?
+  percentageChange Float?
+  profitLoss       Float?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @default(now()) @updatedAt
+  user             User        @relation(fields: [userId], references: [id])
+  meta             Json?
+
+  @@index([createdAt], map: "createdAt_idx")
+  @@index([symbol], map: "symbol_idx")
+  @@index([type])
+  @@index([userId])
+  @@map("trades")
+}
+
+enum TradeType {
+  buy
+  sell
+}
+
+enum TradeStatus {
+  open
+  closed
+}
+
+model ScheduledTrade {
+  id                Int                  @id @default(autoincrement())
+  userId            Int
+  symbol            String
+  quantity          Float
+  riskRewardRatio   Float
+  status            ScheduledTradeStatus @default(pending)
+  cancelAfter       DateTime?
+  proposedEntryDate DateTime             @default(now())
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @default(now()) @updatedAt
+  user              User                 @relation(fields: [userId], references: [id])
+  meta              Json?
+
+  @@index([userId])
+  @@index([symbol])
+  @@index([createdAt])
+  @@map("scheduled_trades")
+}
+
+enum ScheduledTradeStatus {
+  pending
+  executed
+  cancelled
 }
