@@ -1,7 +1,7 @@
 import { hash, compare } from 'bcrypt';
 import Container, { Service } from 'typedi';
-import { TokenObj } from '@interfaces/auth.interface';
 import httpStatus from 'http-status';
+import { TokenObj } from '@interfaces/auth.interface';
 import { TokenService } from './token.service';
 import { LoginUserDto, RegisterUserDto } from '@/dtos/users.dto';
 import { TokenType, User } from '@prisma/client';

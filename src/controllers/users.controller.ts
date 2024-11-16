@@ -9,7 +9,8 @@ export class UserController {
   private user = Container.get(UserService);
 
   public getMe = catchAsync(async (req: RequestWithUser, res: Response): Promise<void> => {
-    const user = this.user.findUserById(req.user.id);
-    res.status(httpStatus.FOUND).json(user);
+    const user = await this.user.findUserById(req.user.id);
+
+    res.status(httpStatus.OK).send(user);
   });
 }
